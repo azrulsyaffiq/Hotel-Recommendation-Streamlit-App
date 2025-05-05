@@ -6,9 +6,19 @@ from sklearn.metrics.pairwise import cosine_similarity
 import altair as alt
 from math import radians, cos, sin, sqrt, atan2
 import pydeck as pdk
+import gdown
 
 # Load saved models/data
-df = pd.read_pickle('hotel_data.pkl')
+# df = pd.read_pickle('hotel_data.pkl')
+@st.cache_data
+def load_hotel_data():
+    file_id = "1DRhV-_K5ld7InRu5gxldylaZexjcNClY"
+    url = f"https://drive.google.com/uc?id={file_id}"
+    output = "hotel_data.pkl"
+    gdown.download(url, output, quiet=False)
+    return pd.read_pickle(output)
+
+df = load_hotel_data()
 vectorizer = joblib.load('tfidf_vectorizer.pkl')
 
 # Streamlit UI
