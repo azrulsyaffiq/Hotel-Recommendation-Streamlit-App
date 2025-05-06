@@ -11,7 +11,7 @@ import gdown
 # Load saved models/data
 # df = pd.read_pickle('hotel_data.pkl')
 @st.cache_data
-def load_hotel_data()
+def load_hotel_data():
     file_id = "12cYKf_a8t2_sHsScXSXj_u5YOo_CBqEm"
     url = f"https://drive.google.com/uc?id={file_id}"
     output = "hotel_data.pkl"
