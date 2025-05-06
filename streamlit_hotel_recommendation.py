@@ -144,7 +144,7 @@ if st.button("Find Similar Hotels"):
         data=result_df,
         get_position='[longitude, latitude]',
         get_color='[0, 128, 255, 160]',
-        get_radius=50,
+        get_radius=150,
         pickable=True
     )
 
