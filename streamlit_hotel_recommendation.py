@@ -9,7 +9,7 @@ import pydeck as pdk
 import gdown
 
 # Load saved models/data
-df = pd.read_pickle('hotel_data_malaysia.pkl')
+df = pd.read_pickle('hotel_data_malaysia.pkl', compression='gzip')
 # @st.cache_data
 # def load_hotel_data():
 #     file_id = "12cYKf_a8t2_sHsScXSXj_u5YOo_CBqEm"
