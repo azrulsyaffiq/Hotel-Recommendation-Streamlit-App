@@ -60,19 +60,43 @@ chart = alt.Chart(rating_counts).mark_bar().encode(
 
 st.altair_chart(chart, use_container_width=True)
 
-# Optional, user able to select rating and facility
+# Optional: if user selects rating and/or facility
 rating_list = df[df['cityName'] == selected_city]['HotelRating'].dropna().unique()
 selected_ratings = st.multiselect("Select Star Ratings (optional)", sorted(rating_list))
 selected_facility = st.text_input("Enter a facility (e.g., pool, wifi)")
 
-# Filter df and return hotel list that fit user-defined requirement
-if selected_ratings:
-    rating_hotels= filter_hotels[(filter_hotels ['HotelRating'].isin(selected_ratings))]
-    rating_hotels_list= rating_hotels['HotelName'].dropna().unique()
-    selected_hotel = st.selectbox(f"Hotels in {selected_city} with stars & facilities choosen", rating_hotels_list)
+# Filter by both rating AND facility
+if selected_ratings and selected_facility:
+    rating_hotels = filter_hotels[filter_hotels['HotelRating'].isin(selected_ratings)]
+    filtered_hotels = rating_hotels[rating_hotels['HotelFacilities'].str.contains(selected_facility, case=False, na=False)]
+    num_hotels = filtered_hotels.shape[0]
+    st.metric(label=f"🧾 Total Hotels in {selected_city} with {selected_ratings} and {selected_facility}", value=num_hotels)
+    st.dataframe(filtered_hotels[['HotelName','HotelRating','Address', 'PhoneNumber', 'HotelWebsiteUrl', 'HotelFacilities']])
+    hotel_list = filtered_hotels['HotelName'].dropna().unique()
+    selected_hotel = st.selectbox(f"Hotels in {selected_city} matching all filters", hotel_list)
+
+# Filter by rating only
+elif selected_ratings:
+    filtered_hotels = filter_hotels[filter_hotels['HotelRating'].isin(selected_ratings)]
+    num_hotels = filtered_hotels.shape[0]
+    st.metric(label=f"🧾 Total Hotels in {selected_city} with ratings {selected_ratings}", value=num_hotels)
+    st.dataframe(filtered_hotels[['HotelName','HotelRating','Address', 'PhoneNumber', 'HotelWebsiteUrl', 'HotelFacilities']])
+    hotel_list = filtered_hotels['HotelName'].dropna().unique()
+    selected_hotel = st.selectbox(f"Hotels in {selected_city} matching selected ratings", hotel_list)
+
+# Filter by facility only
+elif selected_facility:
+    filtered_hotels = filter_hotels[filter_hotels['HotelFacilities'].str.contains(selected_facility, case=False, na=False)]
+    num_hotels = filtered_hotels.shape[0]
+    st.metric(label=f"🧾 Total Hotels in {selected_city} with facility '{selected_facility}'", value=num_hotels)
+    st.dataframe(filtered_hotels[['HotelName','HotelRating','Address', 'PhoneNumber', 'HotelWebsiteUrl', 'HotelFacilities']])
+    hotel_list = filtered_hotels['HotelName'].dropna().unique()
+    selected_hotel = st.selectbox(f"Hotels in {selected_city} matching selected facility", hotel_list)
+
+# No rating or facility filter
 else:
     hotel_list = filter_hotels['HotelName'].dropna().unique()
-    selected_hotel = st.selectbox(f"Hotels in {selected_city} with facilities choosen", hotel_list)
+    selected_hotel = st.selectbox(f"Hotels in {selected_city}", hotel_list)
 
 top_n = 5
 
